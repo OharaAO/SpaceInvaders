@@ -8,6 +8,10 @@ pygame.init()
 # créer la fenetre
 screen = pygame.display.set_mode((800, 600))
 
+
+#background
+background = pygame.image.load('background.png')
+
 #Titre et icone de la fenetre
 pygame.display.set_caption("Space Inviders")
 icon = pygame.image.load('ufo.png')
@@ -72,9 +76,8 @@ while running:
             playerX_change = -4
         if event.key == pygame.K_RIGHT:
             playerX_change = 4
-        if event.key == pygame.K_SPACE and bullet_state == "ready":
-            bulletX = playerX
-            fire_bullet(playerX, bulletY)
+        if event.key == pygame.K_SPACE:
+            fire_bullet(playerX,bulletY)
         
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -101,14 +104,9 @@ while running:
 
     # Mouvement de la balle 
     if bullet_state is "fire":
-        fire_bullet(playerX, playerY)
+        fire_bullet(playerX, bulletY)
         bulletY -= bulletY_change
-    if bulletY <= 0:
-        bulletY = 480 
-        bullet_state == "ready"
     
-
     player(playerX, playerY)
-    
     enemy(enemyX, enemyY)
     pygame.display.update()

@@ -10,35 +10,45 @@ screen = pygame.display.set_mode((800, 600))
 
 # Title and icon
 pygame.display.set_caption("Space Invaders")
-icon = pygame.image.load('images/ufo.png')
+icon = pygame.image.load('ufo.png')
 pygame.display.set_icon(icon)
 
 # Background
-background = pygame.image.load('images/background.png')
+background = pygame.image.load('background.png')
 
 # Player
-playerImg = pygame.image.load('images/player.png')
+playerImg = pygame.image.load('player.png')
 playerX = 370
 playerY = 480
 playerX_change = 0
 
-# Enemy
-enemyImg = []
-enemyX = []
-enemyY = []
-enemyX_change = []
-enemyY_change = []
-num_of_enemies = 6  # Number of enemies
+# Enemys
+enemy1Img = pygame.image.load('enemy.png')
+enemyX = random.randint(0, 736)
+enemyY = random.randint(50, 150)
+enemyX_change = 3
+enemyY_change = 30
 
-for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('images/enemy.png'))
-    enemyX.append(random.randint(0, 736))
-    enemyY.append(random.randint(50, 150))
-    enemyX_change.append(3)
-    enemyY_change.append(30)
+enemy2Img = pygame.image.load('enemy2.png')
+enemy2X = random.randint(0, 736)
+enemy2Y = random.randint(50, 150)
+enemy2X_change = 3
+enemy2Y_change = 30
+
+enemy3Img = pygame.image.load('enemy3.png')
+enemy3X = random.randint(0, 736)
+enemy3Y = random.randint(50, 150)
+enemy3X_change = 3
+enemy3Y_change = 30
+
+enemy4Img = pygame.image.load('enemy4.png')
+enemy4X = random.randint(0, 736)
+enemy4Y = random.randint(50, 150)
+enemy4X_change = 3
+enemy4Y_change = 30
 
 # Bullet
-bulletImg = pygame.image.load('images/bullet.png')
+bulletImg = pygame.image.load('bullet.png')
 bulletX = 0
 bulletY = 480
 bulletY_change = 10
@@ -50,8 +60,11 @@ clock = pygame.time.Clock()
 def player(x, y):
     screen.blit(playerImg, (x, y))
 
-def enemy(x, y, i):
-    screen.blit(enemyImg[i], (x, y))
+def enemy(x, y):
+    screen.blit(enemy1Img, (x, y))
+    screen.blit(enemy2Img, (x, y))
+    screen.blit(enemy3Img, (x, y))
+    screen.blit(enemy4Img, (x, y))
 
 def fire_bullet(x, y):
     global bullet_state
@@ -61,8 +74,6 @@ def fire_bullet(x, y):
 def is_collision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
     return distance < 27
-
-
 
 # Game loop
 running = True
@@ -96,22 +107,25 @@ while running:
         playerX = 736
 
     # Enemy movement
-    for i in range(num_of_enemies):
-        enemyX[i] += enemyX_change[i]
-        if enemyX[i] <= 0 or enemyX[i] >= 736:
-            enemyX_change[i] *= -1
-            enemyY[i] += enemyY_change[i]
+    enemyX += enemyX_change
+    if enemyX <= 0 or enemyX >= 736:
+        enemyX_change *= -1
+        enemyY += enemyY_change
 
-        # Collision detection
-        collision = is_collision(enemyX[i], enemyY[i], bulletX, bulletY)
-        if collision:
-            bulletY = 480
-            bullet_state = "ready"
-            
-            enemyX[i] = random.randint(0, 736)
-            enemyY[i] = random.randint(50, 150)
+    enemy2X += enemy2X_change
+    if enemy2X <= 0 or enemy2X >= 736:
+        enemy2X_change *= -1
+        enemy2Y += enemy2Y_change
 
-        enemy(enemyX[i], enemyY[i], i)
+    enemy3X += enemy3X_change
+    if enemy3X <= 0 or enemy3X >= 736:
+        enemy3X_change *= -1
+        enemy3Y += enemy3Y_change
+
+    enemy4X += enemy4X_change
+    if enemy4X <= 0 or enemy4X >= 736:
+        enemy4X_change *= -1
+        enemy4Y += enemyY_change
 
     # Bullet movement
     if bullet_state == "fire":
@@ -121,7 +135,16 @@ while running:
         bulletY = 480
         bullet_state = "ready"
 
+    # Collision detection
+    collision = is_collision(enemyX, enemyY, bulletX, bulletY)
+    if collision:
+        bulletY = 480
+        bullet_state = "ready"
+        enemyX = random.randint(0, 736)
+        enemyY = random.randint(50, 150)
+
     player(playerX, playerY)
+    enemy(enemyX, enemyY)
     pygame.display.update()
 
     # Frame rate cap
