@@ -44,6 +44,12 @@ bulletY = 480
 bulletY_change = 10
 bullet_state = "ready"
 
+# Score
+score = 0
+font = pygame.font.Font('freesansbold.ttf', 32)  # Default font and size
+textX = 10
+textY = 10
+
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
 
@@ -62,7 +68,9 @@ def is_collision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
     return distance < 27
 
-
+def show_score(x, y):
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))  # White color
+    screen.blit(score_text, (x, y))
 
 # Game loop
 running = True
@@ -102,14 +110,11 @@ while running:
             enemyX_change[i] *= -1
             enemyY[i] += enemyY_change[i]
 
-        # Collision detection
-        collision = is_collision(enemyX[i], enemyY[i], bulletX, bulletY)
-        if collision:
-            bulletY = 480
-            bullet_state = "ready"
-            
-            enemyX[i] = random.randint(0, 736)
-            enemyY[i] = random.randint(50, 150)
+        # Game Over condition
+        if enemyY[i] > 440:
+            for j in range(num_of_enemies):
+                enemyY[j] = 2000  # Move all enemies off-screen
+            break
 
         enemy(enemyX[i], enemyY[i], i)
 
@@ -117,11 +122,21 @@ while running:
     if bullet_state == "fire":
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
-    if bulletY <= 0:
-        bulletY = 480
-        bullet_state = "ready"
+        if bulletY <= 0:
+            bulletY = 480
+            bullet_state = "ready"
+
+    # Collision detection
+    for i in range(num_of_enemies):
+        if is_collision(enemyX[i], enemyY[i], bulletX, bulletY):
+            bulletY = 480
+            bullet_state = "ready"
+            score += 1  # Increment score
+            enemyX[i] = random.randint(0, 736)
+            enemyY[i] = random.randint(50, 150)
 
     player(playerX, playerY)
+    show_score(textX, textY)  # Display the score
     pygame.display.update()
 
     # Frame rate cap
