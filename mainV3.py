@@ -50,6 +50,11 @@ font = pygame.font.Font('freesansbold.ttf', 32)  # Default font and size
 textX = 10
 textY = 10
 
+
+GameOver_Font = pygame.font.Font('freesansbold.ttf', 50)
+GameOver_X = 320
+GameOver_Y = 320
+
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
 
@@ -71,6 +76,10 @@ def is_collision(enemyX, enemyY, bulletX, bulletY):
 def show_score(x, y):
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))  # White color
     screen.blit(score_text, (x, y))
+
+def show_gameOver(x,y):
+    GameOvertxt= font.render("Game Over",True ,(255,255,255))
+    screen.blit(GameOvertxt,(x,y))
 
 # Game loop
 running = True
@@ -112,9 +121,11 @@ while running:
 
         # Game Over condition
         if enemyY[i] > 440:
+            show_gameOver(GameOver_X,GameOver_Y)
             for j in range(num_of_enemies):
                 enemyY[j] = 2000  # Move all enemies off-screen
-            break
+                
+            
 
         enemy(enemyX[i], enemyY[i], i)
 

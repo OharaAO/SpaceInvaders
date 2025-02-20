@@ -1,5 +1,5 @@
 TO do :
 shooting multiple bullet
-add score counter
+add a max score to beat next to the score counter
 add lives counter for player
 fix ennemy random spawning
