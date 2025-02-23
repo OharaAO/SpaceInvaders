@@ -39,17 +39,14 @@ for i in range(num_of_enemies):
 
 # Bullet
 bulletImg = pygame.image.load('images/bullet.png')
-bulletX = 0
-bulletY = 480
 bulletY_change = 10
-bullet_state = "ready"
+bullets = []  # List to store multiple bullets
 
 # Score
 score = 0
 font = pygame.font.Font('freesansbold.ttf', 32)  # Default font and size
 textX = 10
 textY = 10
-
 
 GameOver_Font = pygame.font.Font('freesansbold.ttf', 50)
 GameOver_X = 320
@@ -65,9 +62,7 @@ def enemy(x, y, i):
     screen.blit(enemyImg[i], (x, y))
 
 def fire_bullet(x, y):
-    global bullet_state
-    bullet_state = "fire"
-    screen.blit(bulletImg, (x + 16, y + 10))
+    bullets.append([x, y])  # Add a new bullet to the list
 
 def is_collision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
@@ -97,9 +92,8 @@ while running:
                 playerX_change = -4
             if event.key == pygame.K_RIGHT:
                 playerX_change = 4
-            if event.key == pygame.K_SPACE and bullet_state == "ready":
-                bulletX = playerX
-                fire_bullet(bulletX, bulletY)
+            if event.key == pygame.K_SPACE:
+                fire_bullet(playerX, playerY)  # Fire a new bullet
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -124,27 +118,25 @@ while running:
             show_gameOver(GameOver_X,GameOver_Y)
             for j in range(num_of_enemies):
                 enemyY[j] = 2000  # Move all enemies off-screen
-                
-            
 
         enemy(enemyX[i], enemyY[i], i)
 
     # Bullet movement
-    if bullet_state == "fire":
-        fire_bullet(bulletX, bulletY)
-        bulletY -= bulletY_change
-        if bulletY <= 0:
-            bulletY = 480
-            bullet_state = "ready"
+    for bullet in bullets:
+        bullet[1] -= bulletY_change  # Move the bullet up
+        screen.blit(bulletImg, (bullet[0] + 16, bullet[1] + 10))  # Draw the bullet
+        if bullet[1] <= 0:
+            bullets.remove(bullet)  # Remove the bullet if it goes off-screen
 
     # Collision detection
-    for i in range(num_of_enemies):
-        if is_collision(enemyX[i], enemyY[i], bulletX, bulletY):
-            bulletY = 480
-            bullet_state = "ready"
-            score += 1  # Increment score
-            enemyX[i] = random.randint(0, 736)
-            enemyY[i] = random.randint(50, 150)
+    for bullet in bullets:
+        for i in range(num_of_enemies):
+            if is_collision(enemyX[i], enemyY[i], bullet[0], bullet[1]):
+                bullets.remove(bullet)  # Remove the bullet on collision
+                score += 1  # Increment score
+                enemyX[i] = random.randint(0, 736)
+                enemyY[i] = random.randint(50, 150)
+                break
 
     player(playerX, playerY)
     show_score(textX, textY)  # Display the score
